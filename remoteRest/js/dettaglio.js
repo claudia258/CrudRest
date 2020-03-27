@@ -22,22 +22,51 @@ function buildDettaglioFromJson(json){
 
 function executeDettaglio(){
 	id = $("#idInputId").val();
-	doCall('GET', 'http://212.237.32.76:3000/risorsa/'+id, {}, function(resultJson){
+
+	showSpinner();
+	
+	doCall('GET', 'http://212.237.32.76:3000/risorsa/'+id, {}, function(resultJson){	
 		buildDettaglioFromJson(resultJson);
 		mostra(true);
+		stopSpinner();
+	}, function (){
+		stopSpinner();
 	});
 }
 
 
 //Utility
 
-function doCall(typeRequest, urlPath, parametri, callbackOnSuccess) {
+function doCall(typeRequest, urlPath, parametri, callbackOnSuccess, callbackOnError) {
 	$.ajax({
 		url: urlPath,
 		type: typeRequest,
 		data: parametri,
-		success: callbackOnSuccess
+		success: callbackOnSuccess,
+		error: callbackOnError
 	});
+}
+
+function showSpinner(){
+	$("#fakeLoaderId").addClass("fakeLoader");
+	$("#fakeLoaderId").show();
+	
+	console.log("start Spinner");
+	$.fakeLoader({
+                    bgColor: '#3498db',
+                    spinner:"spinner3",
+					timeToHide: 999999999
+                });
+}
+
+function stopSpinner(){
+	var fadeOutDelay = 0;
+	var fadeOutTime = 3000;
+	
+	setTimeout(function(){ 
+		$("#fakeLoaderId").fadeOut(fadeOutTime);
+	}, fadeOutDelay);
+    
 }
 
 function mostra(show){
@@ -52,6 +81,7 @@ function mostra(show){
 }
 
 function indietro(){
-	document.getElementById("idInputId") = ""; 
+	var id = document.getElementById("#idInputId");
+	id = ""; 
 	mostra(false);
 }
